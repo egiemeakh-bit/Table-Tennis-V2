@@ -629,3 +629,21 @@ window.addEventListener('DOMContentLoaded', () => {
     loadData();
 });
 
+// --- KI Settings UI Funktionen ---
+function toggleAISettings() {
+    const popup = document.getElementById('ai-settings-popup');
+    if (popup) popup.style.display = 'flex';
+}
+
+function closeAISettings() {
+    const popup = document.getElementById('ai-settings-popup');
+    if (popup) popup.style.display = 'none';
+}
+
+function toggleAIMute() {
+    const isMuted = commentator.toggleMute();
+    const btn = document.getElementById('ai-mute-btn');
+    if (btn) {
+        btn.textContent = isMuted ? 'Aktivieren' : 'Stummschalten';
+    }
+}
