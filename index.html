@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Liquid League Tracker (Fixed Colors)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://js.puter.com/v2/"></script>
+</head>
+<body>
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="app-container">
+        <div class="player-card" id="p1-card">
+            <div class="player-header" id="p1-header">Spieler 1<span class="comeback-badge" style="display: none;"></span></div>
+            <div class="score-difference" id="p1-score-diff">=</div>
+            <div class="counter-wrapper">
+                <div class="current-wins-display" id="p1-display">0</div>
+                <div class="btn-label"><div class="league-icon" style="background: var(--bronze)"></div> Bronze</div>
+                <div class="controls">
+                    <button class="btn" onclick="modifyScore(0, -1)">-</button>
+                    <button class="btn btn-plus" onclick="modifyScore(0, 1)">+</button>
+                </div>
+            </div>
+            <div id="p1-leagues" class="league-stack"></div>
+        </div>
+
+        <div class="top-buttons">
+            <button class="top-btn" onclick="openAchievements()">Achievements</button>
+            <button class="top-btn" onclick="openSettings()">Settings</button>
+        </div>
+
+        <!-- Dynamic Island am unteren Rand -->
+        <div class="dynamic-island">
+            <button class="island-btn" onclick="openSettings()" title="Settings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
+            <button class="island-btn" onclick="openAchievements()" title="Achievements">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                    <path d="M4 22h16"></path>
+                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                </svg>
+            </button>
+            <button class="island-btn" onclick="toggleTheme()" title="Theme wechseln" id="theme-toggle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="player-card" id="p2-card">
+            <div class="player-header" id="p2-header">Spieler 2<span class="comeback-badge" style="display: none;"></span></div>
+            <div class="score-difference" id="p2-score-diff">=</div>
+            <div class="counter-wrapper">
+                <div class="current-wins-display" id="p2-display">0</div>
+                <div class="btn-label"><div class="league-icon" style="background: var(--bronze)"></div> Bronze</div>
+                <div class="controls">
+                    <button class="btn" onclick="modifyScore(1, -1)">-</button>
+                    <button class="btn btn-plus" onclick="modifyScore(1, 1)">+</button>
+                </div>
+            </div>
+            <div id="p2-leagues" class="league-stack"></div>
+        </div>
+    </div>
+
+    <!-- Settings Popup -->
+    <div class="popup-overlay" id="settings-popup">
+        <div class="popup-content">
+            <div class="popup-title">Settings</div>
+            
+            <div class="popup-section">
+                <div class="popup-section-title">Spiel auswählen/erstellen</div>
+                <select class="popup-select" id="game-select" onchange="onGameSelect()">
+                    <option value="">Neues Spiel erstellen...</option>
+                </select>
+                <input type="text" class="popup-input" id="new-game-title" placeholder="Spieltitel (bei neuem Spiel erforderlich)" style="display: none;">
+                <button class="popup-btn" id="create-game-btn" onclick="createNewGame()" style="display: none;">Spiel erstellen</button>
+                <button class="popup-btn danger" id="delete-game-btn" onclick="showDeleteConfirmation()" style="display: none; margin-top: 10px;">Spiel löschen</button>
+                <div id="delete-confirmation" style="display: none;">
+                    <p style="margin: 15px 0; text-align: center;">Bist du sicher, dass du dieses Spiel löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                    <div class="confirmation-buttons">
+                        <button class="popup-btn success" onclick="confirmDelete()">✓</button>
+                        <button class="popup-btn danger" onclick="cancelDelete()">✗</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup-section">
+                <div class="popup-section-title">Spielernamen ändern</div>
+                <input type="text" class="popup-input" id="p1-name-input" placeholder="Spieler 1 Name">
+                <input type="text" class="popup-input" id="p2-name-input" placeholder="Spieler 2 Name">
+                <button class="popup-btn" onclick="savePlayerNames()">Namen speichern</button>
+            </div>
+
+            <div class="popup-section">
+                <div class="popup-section-title">Aktuelles Spiel zurücksetzen</div>
+                <button class="popup-btn danger" onclick="showResetConfirmation()">Reset current Game</button>
+                <div id="reset-confirmation" style="display: none;">
+                    <p style="margin: 15px 0; text-align: center;">Bist du sicher, dass du den aktuellen Spielstand zurücksetzen möchtest?</p>
+                    <div class="confirmation-buttons">
+                        <button class="popup-btn success" onclick="confirmReset()">✓</button>
+                        <button class="popup-btn danger" onclick="cancelReset()">✗</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup-section">
+                <div class="popup-section-title">Sound-Einstellungen</div>
+                <div style="margin-bottom: 15px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Win Sound</label>
+                        <input type="file" accept="audio/*" class="popup-input" id="win-sound-input" onchange="handleSoundUpload('win')" style="padding: 8px;">
+                        <audio id="win-sound-preview" controls style="width: 100%; margin-top: 5px; display: none;"></audio>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Promoted Sound (Ligenaufstieg)</label>
+                        <input type="file" accept="audio/*" class="popup-input" id="promoted-sound-input" onchange="handleSoundUpload('promoted')" style="padding: 8px;">
+                        <audio id="promoted-sound-preview" controls style="width: 100%; margin-top: 5px; display: none;"></audio>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Comeback Sound</label>
+                        <input type="file" accept="audio/*" class="popup-input" id="comeback-sound-input" onchange="handleSoundUpload('comeback')" style="padding: 8px;">
+                        <audio id="comeback-sound-preview" controls style="width: 100%; margin-top: 5px; display: none;"></audio>
+                    </div>
+                </div>
+            </div>
+
+            <button class="popup-btn" onclick="closeSettings()" style="margin-top: 20px;">Schließen</button>
+        </div>
+    </div>
+
+    <!-- Achievements Popup -->
+    <div class="popup-overlay" id="achievements-popup">
+        <div class="popup-content">
+            <div class="popup-title">Achievements</div>
+            <div style="text-align: center; padding: 40px 0; color: var(--text-secondary);">
+                Coming soon...
+            </div>
+            <button class="popup-btn" onclick="closeAchievements()" style="margin-top: 20px;">Schließen</button>
+        </div>
+    </div>
+
+    <!-- AI Orb and Settings Popup -->
+    <div id="ai-orb-container" class="ai-orb-container">
+        <div class="ai-orb" onclick="toggleAISettings()">
+            <div class="orb-visualizer">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="ai-orb-container">
+        <div class="ai-orb" id="ai-orb" onclick="toggleAISettings()">
+            <div class="orb-visualizer">
+                </div>
+        </div>
+    </div>
+    
+    <div id="ai-settings-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <div class="popup-title">KI Kommentator</div>
+            
+            <div class="settings-group">
+                <label>Sprachausgabe</label>
+                <button id="ai-mute-btn" class="popup-btn" onclick="toggleAIMute()">
+                    Stummschalten / Aktivieren
+                </button>
+            </div>
+    
+            <div class="settings-group" id="ai-mode-container">
+                <label>Persönlichkeit</label>
+                <div class="mode-toggle" style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button id="mode-pro" class="mode-btn active" onclick="commentator.setMode('professional')">Professionell</button>
+                    <button id="mode-trash" class="mode-btn" onclick="commentator.setMode('trash')">Trash Talk</button>
+                </div>
+            </div>
+    
+            <div class="settings-group" id="ai-api-key-container" style="opacity: 0.5;">
+                <label>System-Status</label>
+                <input type="text" id="ai-api-key" class="popup-input" value="Puter.js Active" readonly>
+                <small style="font-size: 0.7rem; color: var(--text-secondary);">KI läuft über Cloud-Infrastruktur (kein Key nötig).</small>
+            </div>
+    
+            <button class="popup-btn" onclick="closeAISettings()" style="margin-top: 20px; background: white; color: black;">Fertig</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="database.js"></script>
+    <script src="commentator.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

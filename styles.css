@@ -1,0 +1,898 @@
+:root {
+    --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --bronze: #ffb38a;
+    --silver: #e0e0e0;
+    --gold: #ffe066;
+    --platinum: #b8d4e3;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+body {
+    font-family: var(--font-stack);
+    background-color: #000;
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Verhindere Zoom komplett */
+    touch-action: manipulation;
+    -ms-touch-action: manipulation;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Verhindere Double-Tap-Zoom */
+    -webkit-tap-highlight-color: transparent;
+}
+
+.liquid-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 10s infinite ease-in-out alternate;
+}
+
+.blob-1 { width: 400px; height: 400px; background: #4facfe; top: -100px; left: -100px; }
+.blob-2 { width: 500px; height: 500px; background: #f093fb; bottom: -100px; right: -100px; }
+.blob-3 { width: 300px; height: 300px; background: #43e97b; top: 40%; left: 40%; opacity: 0.4;}
+
+@keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 50px) scale(1.1); } }
+
+.app-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    gap: 20px;
+}
+
+.player-card {
+    flex: 1;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    position: relative;
+}
+
+.player-header {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.comeback-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.2rem;
+    animation: comebackPulse 0.5s ease-out;
+    filter: drop-shadow(0 0 8px rgba(255, 69, 0, 0.8));
+    transition: all 0.3s ease;
+}
+
+.comeback-count {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: rgba(255, 69, 0, 0.9);
+    text-shadow: 0 0 4px rgba(255, 69, 0, 0.6);
+}
+
+@keyframes comebackPulse {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Flammender Container-Effekt für aktiven Comeback */
+.player-card.comeback-active {
+    position: relative;
+    animation: comebackGlow 2s ease-in-out infinite;
+    box-shadow: 0 0 30px rgba(255, 69, 0, 0.6), 
+                0 0 60px rgba(255, 69, 0, 0.4),
+                0 0 90px rgba(255, 69, 0, 0.2),
+                inset 0 0 20px rgba(255, 69, 0, 0.1);
+    border-color: rgba(255, 69, 0, 0.5);
+}
+
+.player-card.comeback-active::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        rgba(255, 69, 0, 0.3),
+        rgba(255, 140, 0, 0.3),
+        rgba(255, 69, 0, 0.3),
+        rgba(255, 200, 0, 0.3));
+    background-size: 200% 200%;
+    border-radius: 32px;
+    z-index: -1;
+    animation: comebackBorder 3s linear infinite, comebackFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards, comebackFadeOut 0.6s cubic-bezier(0.4, 0, 0.2, 1) 9.4s forwards;
+    filter: blur(8px);
+    opacity: 0;
+}
+
+@keyframes comebackFadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes comebackFadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes comebackGlow {
+    0%, 100% {
+        box-shadow: 0 0 30px rgba(255, 69, 0, 0.6), 
+                    0 0 60px rgba(255, 69, 0, 0.4),
+                    0 0 90px rgba(255, 69, 0, 0.2),
+                    inset 0 0 20px rgba(255, 69, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(255, 69, 0, 0.8), 
+                    0 0 80px rgba(255, 69, 0, 0.6),
+                    0 0 120px rgba(255, 69, 0, 0.4),
+                    inset 0 0 30px rgba(255, 69, 0, 0.2);
+    }
+}
+
+@keyframes comebackBorder {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+body.light-mode .player-card.comeback-active {
+    box-shadow: 0 0 30px rgba(255, 140, 0, 0.5), 
+                0 0 60px rgba(255, 140, 0, 0.3),
+                0 0 90px rgba(255, 140, 0, 0.15),
+                inset 0 0 20px rgba(255, 140, 0, 0.1);
+    border-color: rgba(255, 140, 0, 0.6);
+}
+
+body.light-mode .player-card.comeback-active::before {
+    background: linear-gradient(45deg, 
+        rgba(255, 140, 0, 0.4),
+        rgba(255, 200, 0, 0.4),
+        rgba(255, 140, 0, 0.4),
+        rgba(255, 220, 0, 0.4));
+}
+
+.score-difference {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    min-width: 40px;
+    text-align: center;
+}
+
+.score-difference:not([data-equal="true"]) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.counter-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: auto; 
+    margin-top: 40px;
+}
+
+.current-wins-display {
+    font-size: 8rem;
+    font-weight: 200; 
+    line-height: 1;
+    margin: 10px 0;
+    background: linear-gradient(to bottom, #fff, #ccc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.controls { display: flex; gap: 30px; margin-top: 20px; }
+
+.btn {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+    color: white;
+    font-size: 2rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
+
+.btn-plus { background: rgba(255, 255, 255, 0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+.btn-label {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.league-stack {
+    width: 100%;
+    display: flex;
+    flex-direction: column-reverse; 
+    gap: 12px;
+    margin-top: 40px;
+}
+
+.league-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-radius: 16px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+}
+
+.league-item.active { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+
+.league-left { display: flex; align-items: center; gap: 10px; }
+.league-icon { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+.league-name { font-weight: 500; font-size: 0.95rem; }
+.league-count { font-size: 1.2rem; font-weight: 700; }
+
+.bronze .league-icon { background: var(--bronze); color: var(--bronze); }
+.silver .league-icon { background: var(--silver); color: var(--silver); }
+.gold .league-icon { background: var(--gold); color: var(--gold); }
+.platinum .league-icon { background: var(--platinum); color: var(--platinum); }
+
+/* Popup Styles */
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-overlay.active { display: flex; }
+
+.popup-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    box-shadow: var(--glass-shadow);
+    padding: 30px;
+    max-width: 90%;
+    width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.popup-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.popup-section {
+    margin-bottom: 25px;
+}
+
+.popup-section-title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.popup-input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-stack);
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.popup-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.popup-select {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-stack);
+    font-size: 1rem;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.popup-select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.popup-btn {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-stack);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.popup-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.popup-btn:active {
+    transform: scale(0.98);
+}
+
+.popup-btn.danger {
+    background: rgba(255, 0, 0, 0.2);
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.popup-btn.danger:hover {
+    background: rgba(255, 0, 0, 0.3);
+}
+
+.popup-btn.success {
+    background: rgba(0, 255, 0, 0.2);
+    border-color: rgba(0, 255, 0, 0.3);
+}
+
+.popup-btn.success:hover {
+    background: rgba(0, 255, 0, 0.3);
+}
+
+.confirmation-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.confirmation-buttons .popup-btn {
+    flex: 1;
+    margin: 0;
+}
+
+.top-buttons {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    z-index: 10;
+}
+
+.top-btn {
+    padding: 12px 24px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
+    color: var(--text-primary);
+    font-family: var(--font-stack);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.top-btn:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Dynamic Island am unteren Rand */
+.dynamic-island {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 12px 24px;
+    box-shadow: var(--glass-shadow);
+    z-index: 100;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dynamic-island:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+}
+
+.island-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.island-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.island-btn:active {
+    transform: scale(0.95);
+}
+
+.island-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Light Mode Styles - Apple Liquid Glass Design */
+body.light-mode {
+    background-color: #f5f5f7;
+    --text-primary: #1d1d1f;
+    --text-secondary: rgba(0, 0, 0, 0.6);
+}
+
+body.light-mode .liquid-bg {
+    background: linear-gradient(135deg, #f0f0f5, #e8e8f0, #f5f5f8);
+}
+
+body.light-mode .blob-1 { background: #a8d5ff; }
+body.light-mode .blob-2 { background: #ffb3e6; }
+body.light-mode .blob-3 { background: #b3ffd9; opacity: 0.3; }
+
+body.light-mode .player-card {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+body.light-mode .popup-content {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+body.light-mode .dynamic-island {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+body.light-mode .island-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .island-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+body.light-mode .popup-input,
+body.light-mode .popup-select {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: var(--text-primary);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .popup-input:focus,
+body.light-mode .popup-select:focus {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+body.light-mode .popup-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .popup-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+body.light-mode .league-item {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+body.light-mode .league-item.active {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .score-difference {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+body.light-mode .score-difference:not([data-equal="true"]) {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+body.light-mode .btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+body.light-mode .btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+body.light-mode .btn-plus {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* MOBILE FIXES */
+@media (max-width: 768px) {
+    body {
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height für Mobile */
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+    }
+    
+    .app-container { 
+        flex-direction: column; 
+        padding: 8px; 
+        gap: 8px;
+        max-height: 100vh;
+        max-height: 100dvh;
+        overflow: hidden;
+        height: 100%;
+        justify-content: flex-start;
+    }
+    
+    .player-card { 
+        flex-direction: row; 
+        padding: 12px; 
+        gap: 12px; 
+        min-height: 0;
+        flex: 0 0 calc(50dvh - 68px);
+        max-height: calc(50dvh - 68px);
+        overflow: hidden;
+        margin-bottom: 0;
+    }
+    
+    #p2-card {
+        margin-top: 0;
+    }
+    
+    .counter-wrapper { 
+        margin: 0; 
+        width: 45%; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        position: relative;
+    }
+    
+    .current-wins-display { font-size: 4rem; }
+    .controls { gap: 8px; }
+    .btn { width: 45px; height: 45px; font-size: 1.4rem; }
+    
+    /* Ligen vertikal gestreift: Silber unten, Gold darüber, Platinum oben */
+    .league-stack { 
+        width: 55%; 
+        margin-top: 0; 
+        flex-direction: column; 
+        gap: 6px;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: 100%;
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+    
+    .league-item { 
+        padding: 8px 12px; 
+        flex-direction: row; 
+        width: 100%;
+        min-width: auto;
+        text-align: left;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    
+    /* Zeige Namen der Ligen auf Mobile */
+    .league-left { 
+        display: flex; 
+        flex-direction: row; 
+        gap: 8px;
+        align-items: center;
+    }
+    
+    .league-name { 
+        display: block;
+        font-size: 0.85rem;
+    }
+    
+    .league-count {
+        font-size: 1rem;
+    }
+    
+    .player-header { 
+        position: absolute; 
+        top: calc((50% - 4rem) / 2);
+        transform: translateY(-50%);
+        left: 0;
+        width: 45%;
+        text-align: left;
+        padding-left: 70px;
+        font-size: 0.65rem;
+        white-space: nowrap;
+        z-index: 1;
+    }
+    
+    .score-difference {
+        top: 12px;
+        right: 12px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        min-width: 35px;
+    }
+    
+    /* Buttons in der Mitte zwischen den Spielern - auf Mobile versteckt, da Dynamic Island verwendet wird */
+    .top-buttons { 
+        display: none;
+    }
+    
+    .top-btn {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+    
+    /* Verhindere Zoom komplett auf Mobile */
+    * {
+        touch-action: manipulation;
+        -ms-touch-action: manipulation;
+    }
+    
+    /* Verhindere Double-Tap-Zoom */
+    html {
+        touch-action: manipulation;
+        -ms-touch-action: manipulation;
+    }
+    
+    /* Dynamic Island auf Mobile */
+    .dynamic-island {
+        bottom: 12px;
+        padding: 10px 18px;
+        gap: 10px;
+        border-radius: 40px;
+    }
+    
+    .island-btn {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .island-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* Light Mode Mobile Optimierungen */
+    body.light-mode .player-card {
+        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    
+    body.light-mode .dynamic-island {
+        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+}
+
+
+
+.ai-orb-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+}
+
+.ai-orb {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(10, 10, 10, 0.6);
+    position: relative;
+    cursor: pointer;
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border: 0.5px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Die Apple Intelligence Aura hinter dem Glas */
+.ai-orb::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00f2ff, #7000ff, #ff007b, #fbff00);
+    background-size: 400% 400%;
+    z-index: -1;
+    opacity: 0;
+    filter: blur(15px);
+    transition: opacity 0.4s ease;
+}
+
+.orb-visualizer {
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+}
+
+.orb-visualizer::after {
+    content: '';
+    position: absolute;
+    inset: -100%;
+    background-image: 
+        radial-gradient(at 0% 0%, #5efce8 0, transparent 55%), 
+        radial-gradient(at 100% 0%, #736efe 0, transparent 55%), 
+        radial-gradient(at 50% 100%, #ff6a88 0, transparent 55%),
+        radial-gradient(at 100% 100%, #d4fc79 0, transparent 55%);
+    filter: blur(10px) brightness(1.2);
+    opacity: 0.4;
+}
+
+/* Animationen */
+.ai-orb.thinking::before { opacity: 0.8; animation: apple-rotate 2s linear infinite; }
+.ai-orb.thinking .orb-visualizer::after { animation: liquid-mesh 4s ease infinite alternate; }
+
+.ai-orb.speaking .orb-visualizer::after {
+    opacity: 1;
+    animation: liquid-vibrate 0.25s ease-in-out infinite alternate;
+}
+
+@keyframes apple-rotate {
+    0% { background-position: 0% 50%; transform: rotate(0deg); }
+    100% { background-position: 100% 50%; transform: rotate(360deg); }
+}
+
+@keyframes liquid-mesh {
+    0% { transform: scale(1) translate(-10%, -10%); }
+    100% { transform: scale(1.5) translate(10%, 10%); }
+}
+
+@keyframes liquid-vibrate {
+    from { transform: scale(1.1); filter: blur(8px) brightness(1.6); }
+    to { transform: scale(1.3); filter: blur(5px) brightness(1.9); }
+}
+
+.ai-orb.muted { filter: grayscale(1); opacity: 0.4; }
