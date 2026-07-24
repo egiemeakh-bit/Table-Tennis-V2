@@ -1,7 +1,7 @@
 // --- SUPABASE KONFIGURATION ---
 // Ersetze diese beiden Werte mit deinen eigenen Supabase Credentials aus deinem Supabase-Dashboard:
-const SUPABASE_URL = "https://DEIN-PROJEKT.supabase.co";
-const SUPABASE_ANON_KEY = "DEIN-SUPABASE-ANON-KEY";
+const SUPABASE_URL = "https://yqjccovqvobvepglkezf.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_S4k5G-gyDPGEtXaDlCT-7Q_5BcmAoma";
 
 // Supabase Client initialisieren
 let supabaseClient = null;
