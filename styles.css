@@ -1,59 +1,390 @@
-/* iOS 27 Liquid Glass - Energiesparend & Clean */
+/* iOS 27 Liquid Glass - Pure Black & Vibrant Neon Design */
 :root {
-    --glass-bg: rgba(20, 20, 20, 0.4); /* Dunkler für bessere Energieeffizienz */
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-    /* Siri Gradient für den Orb */
-    --siri-gradient: linear-gradient(135deg, #4facfe, #00f2fe, #f093fb, #f5576c);
+    --bg-black: #000000;
+    --glass-bg: rgba(22, 22, 26, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    --accent-cyan: #00f2fe;
+    --accent-blue: #4facfe;
+    --accent-pink: #f093fb;
+    --accent-red: #f5576c;
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.6);
+    --siri-gradient: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-pink), var(--accent-red));
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 body {
-    background-color: #000; /* OLED-Schwarz schont den Akku */
-}
-
-/* Optimierte Background Blobs - Weniger Opacity, weicherer Blur */
-.liquid-bg {
-    background: #000;
-}
-.blob {
-    filter: blur(120px);
-    opacity: 0.25; 
-    animation: float 15s infinite ease-in-out alternate; /* Langsamere Animation = weniger GPU-Last */
-}
-
-/* Liquid Glass Cards */
-.player-card, .popup-content, .dynamic-island {
-    background: var(--glass-bg);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 32px;
-}
-
-/* iOS 27 Siri AI Orb */
-.ai-orb {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--siri-gradient);
-    background-size: 300% 300%;
-    box-shadow: 0 0 20px rgba(79, 172, 254, 0.3), inset 0 0 15px rgba(255,255,255,0.4);
-    animation: siriPulse 4s ease-in-out infinite, siriGradient 6s ease infinite;
-    cursor: pointer;
+    background-color: var(--bg-black);
+    color: var(--text-main);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: animation-duration 0.3s ease;
+    overflow-x: hidden;
+}
+
+/* Background Ambient Blobs */
+.liquid-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.22;
+}
+
+.blob-1 {
+    top: -100px;
+    left: -100px;
+    background: var(--accent-blue);
+    animation: float1 18s ease-in-out infinite alternate;
+}
+
+.blob-2 {
+    bottom: -100px;
+    right: -100px;
+    background: var(--accent-pink);
+    animation: float2 22s ease-in-out infinite alternate;
+}
+
+@keyframes float1 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(120px, 80px) scale(1.2); }
+}
+
+@keyframes float2 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-100px, -90px) scale(1.1); }
+}
+
+/* Layout Container */
+.app-container {
+    width: 100%;
+    max-width: 900px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Dynamic Island Header */
+.dynamic-island {
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px) saturate(190%);
+    -webkit-backdrop-filter: blur(30px) saturate(190%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 40px;
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.match-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.status-indicator {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #34c759;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #34c759;
+}
+
+.server-badge {
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Scoreboard */
+.scoreboard {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.player-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 36px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease;
+}
+
+.player-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.player-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
+.player-name-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: var(--text-main);
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: center;
+    width: 70%;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.player-name-input:focus {
+    border-bottom-color: var(--accent-cyan);
+}
+
+.service-dot {
+    font-size: 1.2rem;
+    transition: opacity 0.3s ease;
+}
+
+.sets-display {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+.score-display {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(180deg, #ffffff 30%, rgba(255, 255, 255, 0.5) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 10px 0;
+}
+
+.vs-divider {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 20px;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.btn-plus {
+    flex: 2;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    font-size: 1.2rem;
+}
+
+.btn-plus:hover {
+    background: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    transform: scale(1.02);
+}
+
+.btn-plus:active {
+    transform: scale(0.96);
+}
+
+.btn-minus {
+    flex: 1;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+    border: 1px solid var(--glass-border);
+    font-size: 1.1rem;
+}
+
+.btn-minus:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Commentator & Siri Orb */
+.commentator-section {
+    background: var(--glass-bg);
+    backdrop-filter: blur(40px) saturate(190%);
+    -webkit-backdrop-filter: blur(40px) saturate(190%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 36px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.ai-orb-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ai-orb {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--siri-gradient);
+    background-size: 300% 300%;
+    box-shadow: 0 0 25px rgba(79, 172, 254, 0.4), inset 0 0 12px rgba(255, 255, 255, 0.5);
+    animation: siriPulse 4s ease-in-out infinite, siriShift 6s ease infinite;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.ai-orb:hover {
+    transform: scale(1.08);
 }
 
 @keyframes siriPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(79, 172, 254, 0.3); }
-    50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(240, 147, 251, 0.5); }
+    0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); }
+    50% { transform: scale(1.08); box-shadow: 0 0 35px rgba(240, 147, 251, 0.6); }
 }
 
-@keyframes siriGradient {
+@keyframes siriShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+}
+
+.commentary-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.commentary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ai-badge {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+}
+
+.commentary-text {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.9);
+    font-style: italic;
+}
+
+/* Action Bar */
+.action-bar {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+.btn-secondary {
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+    border: 1px solid var(--glass-border);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-primary {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    color: #000;
+    font-weight: 700;
+}
+
+.btn-primary:hover {
+    opacity: 0.95;
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-icon:hover {
+    color: #fff;
+}
+
+/* Responsive Grid */
+@media (max-width: 768px) {
+    .scoreboard {
+        grid-template-columns: 1fr;
+    }
+    .vs-divider {
+        display: none;
+    }
+    .action-bar {
+        flex-direction: column;
+    }
 }
