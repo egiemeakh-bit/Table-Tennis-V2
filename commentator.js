@@ -90,6 +90,33 @@ class TableTennisCommentator {
 
         window.speechSynthesis.speak(utterance);
     }
+    /**
+   * Text-to-Speech (TTS) Funktion
+   */
+  speak(text) {
+    if (!('speechSynthesis' in window)) {
+        console.warn('Web Speech API wird nicht unterstützt.');
+        return;
+    }
+
+    // Bricht ab, falls die KI noch den vorherigen Punkt kommentiert
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'de-DE';
+    utterance.rate = 1.1; // Leicht erhöht für mehr sportliche Dynamik
+
+    // Orb-Animation während des Sprechens beschleunigen
+    const orb = document.getElementById('ai-orb');
+    if (orb) orb.style.animationDuration = '1.5s, 3s'; 
+
+    utterance.onend = () => {
+        // Orb-Animation nach dem Sprechen normalisieren
+        if (orb) orb.style.animationDuration = '4s, 6s'; 
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
 }
 
 // Initiiere den Kommentator global, damit app.js darauf zugreifen kann
