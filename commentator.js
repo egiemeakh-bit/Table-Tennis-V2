@@ -1,128 +1,107 @@
 /**
- * Table Tennis Game Commentator (Browser Edition mit Puter.js)
+ * Tischtennis KI-Kommentator mit Puter.ai & Web Speech API TTS
  */
 class TableTennisCommentator {
     constructor() {
-        this.muted = false;
-        this.mode = 'professional'; // 'professional' oder 'trash'
-        this.isProcessing = false;
+        this.audioEnabled = true;
+        this.synth = window.speechSynthesis || null;
+        this.lastCommentary = "";
     }
 
-    setMode(mode) {
-        this.mode = mode;
-        // UI Update
-        document.getElementById('mode-pro').classList.toggle('active', mode === 'professional');
-        document.getElementById('mode-trash').classList.toggle('active', mode === 'trash');
-    }
-
-    toggleMute() {
-        this.muted = !this.muted;
-        const orb = document.getElementById('ai-orb');
-        if (orb) {
-            if (this.muted) orb.classList.add('muted');
-            else orb.classList.remove('muted');
+    /**
+     * Schaltet Audio an/aus
+     */
+    toggleAudio() {
+        this.audioEnabled = !this.audioEnabled;
+        if (!this.audioEnabled && this.synth) {
+            this.synth.cancel();
         }
-        return this.muted;
+        return this.audioEnabled;
     }
 
-    async onScoreChange(p1Scores, p2Scores, p1Name, p2Name, eventType) {
-        if (this.muted || this.isProcessing) return;
+    /**
+     * Generiert einen Live-Kommentar basierend auf dem aktuellen Match-Stand
+     */
+    async generateCommentary(p1Name, p2Name, score1, score2, sets1, sets2, lastScorer) {
+        const prompt = `Du bist ein begeisterter, professioneller Tischtennis-Live-Kommentator.
+Match-Status:
+- ${p1Name}: ${score1} Punkte (Sätze: ${sets1})
+- ${p2Name}: ${score2} Punkte (Sätze: ${sets2})
+- Letzter Punkt gemacht von: ${lastScorer}
 
-        // Gesamtpunkte berechnen (vereinfachte Logik für den Prompt)
-        const p1Total = p1Scores.reduce((a, b) => a + b, 0);
-        const p2Total = p2Scores.reduce((a, b) => a + b, 0);
-
-        // Orb visuell auf "denkend" setzen
-        const orb = document.getElementById('ai-orb');
-        if (orb) orb.classList.add('thinking');
-
-        const prompt = `Du bist ein Tischtennis-Kommentator. 
-        Persönlichkeit: ${this.mode === 'trash' ? 'sarkastisch, witzig, frech (Trash Talk)' : 'professionell, sportlich, enthusiastisch'}.
-        Ereignis: Es gab gerade einen ${eventType}.
-        Spielstand: ${p1Name} hat ${p1Total} Punkte. ${p2Name} hat ${p2Total} Punkte.
-        Aufgabe: Generiere genau EINEN kurzen, prägnanten Satz (max. 15 Wörter) als Kommentar auf Deutsch.`;
+Erstelle einen extrem kurzen, knackigen, mitreißenden Satz (maximal 15 Wörter) auf Deutsch, der diesen Punkt kommentiert.`;
 
         try {
-            this.isProcessing = true;
-            // Nutzt die kostenlose Puter.js API aus der index.html
-            const response = await puter.ai.chat(prompt);
-            const commentary = response.message.text.trim();
-            this.speak(commentary);
+            let resultText = "";
+
+            // Verwendung von Puter AI falls verfügbar
+            if (typeof puter !== 'undefined' && puter.ai) {
+                const response = await puter.ai.chat(prompt, { model: 'gpt-4o-mini' });
+                resultText = typeof response === 'string' ? response : response?.message?.content || response.toString();
+            } else {
+                // Fallback, falls Puter nicht erreichbar ist
+                resultText = `Starker Punkt von ${lastScorer}! Der Spielstand steht nun ${score1} zu ${score2}.`;
+            }
+
+            this.lastCommentary = resultText.trim();
+            
+            // Text vorlesen, falls Audio aktiviert ist
+            if (this.audioEnabled) {
+                this.speak(this.lastCommentary);
+            }
+
+            return this.lastCommentary;
         } catch (error) {
-            console.error('[Commentator] Fehler bei der KI-Generierung:', error);
-        } finally {
-            this.isProcessing = false;
-            if (orb) orb.classList.remove('thinking');
+            console.warn("KI Generierung fehlgeschlagen, benutze Standard-Kommentar:", error);
+            const fallback = `Punkt für ${lastScorer}! Spielstand: ${score1} zu ${score2}.`;
+            if (this.audioEnabled) this.speak(fallback);
+            return fallback;
         }
     }
 
+    /**
+     * Text-to-Speech (Sprachausgabe)
+     */
     speak(text) {
-        if (this.muted) return;
+        if (!this.synth) {
+            console.warn("Web Speech API wird von diesem Browser nicht unterstützt.");
+            return;
+        }
+
+        // Laufende Sprachausgaben abbrechen für geringe Latenz
+        this.synth.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
-        
-        // Stimmen laden und nach afrikanischen Lokalisierungen filtern
-        const voices = window.speechSynthesis.getVoices();
-        
-        // Versuch 1: Spezifische afrikanische Länderkürzel (z.B. ZA=Südafrika, NG=Nigeria)
-        // Versuch 2: Standard Deutsch, damit die Aussprache des deutschen Textes nicht komplett kaputt klingt
-        const selectedVoice = voices.find(v => v.lang.includes('ZA') || v.lang.includes('NG') || v.lang.includes('KE')) 
-                           || voices.find(v => v.lang.includes('de-DE'))
-                           || voices[0];
-
-        if (selectedVoice) {
-            utterance.voice = selectedVoice;
-        }
-
-        // Sprach-Parameter anpassen für eine tiefere, voluminösere Stimme
-        utterance.pitch = 0.8;
-        utterance.rate = 1.0;
+        utterance.lang = 'de-DE';
+        utterance.rate = 1.15; // Dynamisches Tempo für Sportkommentar
+        utterance.pitch = 1.0;
 
         const orb = document.getElementById('ai-orb');
-        
+
         utterance.onstart = () => {
-            if (orb) orb.classList.add('speaking');
+            if (orb) {
+                orb.style.animationDuration = '1.2s, 2s'; // Schnelleres Pulsieren beim Sprechen
+                orb.style.transform = 'scale(1.15)';
+            }
         };
-        
+
         utterance.onend = () => {
-            if (orb) orb.classList.remove('speaking');
+            if (orb) {
+                orb.style.animationDuration = '4s, 6s'; // Normale Animation nach dem Sprechen
+                orb.style.transform = 'scale(1)';
+            }
         };
 
-        window.speechSynthesis.speak(utterance);
+        utterance.onerror = () => {
+            if (orb) {
+                orb.style.animationDuration = '4s, 6s';
+                orb.style.transform = 'scale(1)';
+            }
+        };
+
+        this.synth.speak(utterance);
     }
-    /**
-   * Text-to-Speech (TTS) Funktion
-   */
-  speak(text) {
-    if (!('speechSynthesis' in window)) {
-        console.warn('Web Speech API wird nicht unterstützt.');
-        return;
-    }
-
-    // Bricht ab, falls die KI noch den vorherigen Punkt kommentiert
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'de-DE';
-    utterance.rate = 1.1; // Leicht erhöht für mehr sportliche Dynamik
-
-    // Orb-Animation während des Sprechens beschleunigen
-    const orb = document.getElementById('ai-orb');
-    if (orb) orb.style.animationDuration = '1.5s, 3s'; 
-
-    utterance.onend = () => {
-        // Orb-Animation nach dem Sprechen normalisieren
-        if (orb) orb.style.animationDuration = '4s, 6s'; 
-    };
-
-    window.speechSynthesis.speak(utterance);
-  }
 }
 
-// Initiiere den Kommentator global, damit app.js darauf zugreifen kann
+// Instanziierung
 const commentator = new TableTennisCommentator();
-
-// Workaround: Browser laden Stimmen oft asynchron. Dies stößt das Laden an.
-if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-}
